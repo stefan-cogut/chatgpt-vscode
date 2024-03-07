@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-ai",
-  "displayName": "ChatGPT AI",
+  "displayName": "FintechOS AI",
   "description": "Automatically write new code, ask questions, find bugs, and more with ChatGPT AI",
   "version": "0.7.13",
   "publisher": "YaleHuang",
@@ -43,35 +43,35 @@
     "commands": [
       {
         "command": "chatgpt-ai.ask",
-        "title": "Ask ChatGPT"
+        "title": "Ask FintechOS AI"
       },
       {
         "command": "chatgpt-ai.explain",
-        "title": "ChatGPT-AI: Explain selection"
+        "title": "FintechOS-AI: Explain selection"
       },
       {
         "command": "chatgpt-ai.refactor",
-        "title": "ChatGPT-AI: Refactor selection"
+        "title": "FintechOS-AI: Refactor selection"
       },
       {
         "command": "chatgpt-ai.findProblems",
-        "title": "ChatGPT-AI: Find problems"
+        "title": "FintechOS-AI: Find problems"
       },
       {
         "command": "chatgpt-ai.optimize",
-        "title": "ChatGPT-AI: Optimize selection"
+        "title": "FintechOS-AI: Optimize selection"
       },
       {
         "command": "chatgpt-ai.documentation",
-        "title": "ChatGPT-AI: Write documentation"
+        "title": "FintechOS-AI: Write documentation"
       },
       {
         "command": "chatgpt-ai.complete",
-        "title": "ChatGPT-AI: Complete code"
+        "title": "FintechOS-AI: Complete code"
       },
       {
         "command": "chatgpt-ai.resetConversation",
-        "title": "Reset ChatGPT conversation"
+        "title": "Reset FintechOS AI conversation"
       }
     ],
     "menus": {
@@ -149,7 +149,7 @@
       "activitybar": [
         {
           "id": "chatgpt",
-          "title": "ChatGPT AI",
+          "title": "FintechOS AI",
           "icon": "resources/icon.png"
         }
       ]
@@ -159,7 +159,7 @@
         {
           "type": "webview",
           "id": "chatgpt-ai.chatView",
-          "name": "ChatGPT AI"
+          "name": "FintechOS AI"
         }
       ]
     },

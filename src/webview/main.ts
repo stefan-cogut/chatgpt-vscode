@@ -284,6 +284,10 @@ interface ChatEvent {
       // If the key combination that was pressed was Ctrl+Enter
       if (e.keyCode === 13 && e.ctrlKey) {
         sendMessage(promptInput.val() as string);
+        promptInput.val(() => { return "";});
+      }
+      if (e.keyCode === 13 && e.altKey) {
+        sendMessage(promptInput.val() as string);
       }
     });
 
