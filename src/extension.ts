@@ -26,7 +26,7 @@ type WorkingState = 'idle' | 'asking';
 
 export function activate(context: vscode.ExtensionContext) {
 
-	console.log('activating extension "chatgpt"');
+	console.log('activating extension "FintechOS AI"');
 	// Get the settings from the extension's configuration
 	const config = vscode.workspace.getConfiguration('chatgpt-ai');
 
@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 	provider.setSettings({
 		selectedInsideCodeblock: config.get('selectedInsideCodeblock') || false,
 		codeblockWithLanguageId: config.get('codeblockWithLanguageId') || false,
-		keepConversation: config.get('keepConversation') || false,
+		keepConversation: config.get('keepConversation') || true,
 		timeoutLength: config.get('timeoutLength') || 60,
 	});
 
@@ -72,16 +72,16 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInputBox({ prompt: 'What do you want to do?' })
 				.then((value) => {
 					if (value !== undefined && value !== null) {
-						provider.askWithContext(value, "selection");
+						provider.askWithContext(value, "selection", false);
 					}
 				})
 		),
-		vscode.commands.registerCommand('chatgpt-ai.explain', () => commandHandler('promptPrefix.explain')),
-		vscode.commands.registerCommand('chatgpt-ai.refactor', () => commandHandler('promptPrefix.refactor')),
-		vscode.commands.registerCommand('chatgpt-ai.optimize', () => commandHandler('promptPrefix.optimize')),
-		vscode.commands.registerCommand('chatgpt-ai.findProblems', () => commandHandler('promptPrefix.findProblems')),
-		vscode.commands.registerCommand('chatgpt-ai.documentation', () => commandHandler('promptPrefix.documentation')),
-		vscode.commands.registerCommand('chatgpt-ai.complete', () => commandHandler('promptPrefix.complete')),
+		// vscode.commands.registerCommand('chatgpt-ai.explain', () => commandHandler('promptPrefix.explain')),
+		// vscode.commands.registerCommand('chatgpt-ai.refactor', () => commandHandler('promptPrefix.refactor')),
+		// vscode.commands.registerCommand('chatgpt-ai.optimize', () => commandHandler('promptPrefix.optimize')),
+		// vscode.commands.registerCommand('chatgpt-ai.findProblems', () => commandHandler('promptPrefix.findProblems')),
+		// vscode.commands.registerCommand('chatgpt-ai.documentation', () => commandHandler('promptPrefix.documentation')),
+		// vscode.commands.registerCommand('chatgpt-ai.complete', () => commandHandler('promptPrefix.complete')),
 		vscode.commands.registerCommand('chatgpt-ai.resetConversation', () => provider.resetConversation())
 	);
 
@@ -289,7 +289,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 				}
 				case 'sendPrompt':
 					{
-						this.askWithContext(data.value.task, data.value.context);
+						this.askWithContext(data.value.task, data.value.context, data.value.shouldKeepThePrompt);
 						break;
 					}
 				case 'abort':
@@ -361,7 +361,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		}
 	}
 
-	public async askWithContext(task: string, context: string): Promise<void> {
+	public async askWithContext(task: string, context: string, shouldKeepThePrompt: boolean = true): Promise<void> {
 		this._task = task || "";
 
 		if (!this._chatGPTAPI) {
@@ -415,10 +415,10 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			searchPrompt = task;
 		}
 		
-		this._askChatGPT(searchPrompt);
+		this._askChatGPT(searchPrompt, shouldKeepThePrompt);
 	}
 
-	private async _askChatGPT(searchPrompt: string): Promise<void> {
+	private async _askChatGPT(searchPrompt: string, shouldKeepThePrompt: boolean = true): Promise<void> {
 		this._view?.show?.(true);
 
 		if (!this._chatGPTAPI) {
@@ -427,7 +427,12 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			return;
 		}
 
-		this._view?.webview.postMessage({ type: "setTask", value: this._task });
+		// Manages the prompt input
+		if(shouldKeepThePrompt){
+			this._view?.webview.postMessage({ type: "setTask", value: this._task });
+		} else {
+			this._view?.webview.postMessage({ type: "setTask", value: '' });
+		}
 
 		const requestMessage = {
 			type: "addRequest",

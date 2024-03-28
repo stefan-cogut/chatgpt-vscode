@@ -106,12 +106,12 @@
         </div>
         <div class="flex items-center justify-between">
             <div class="flex items-center">
-                <div class="mx-1 text-stone-300 text-sm">Context</div>
-                <select id="context-select" class="bg-stone-700 text-sm">
-                    <option value="none" selected>None</option>
+                <div class="mx-1 text-gray-500 text-sm"><i>Context</i></div>
+                <select id="context-select" class="text-sm bg-neutral-800 text-gray-500">
+                    <option value="none" selected >None</option>
                     <option value="selection">Selection</option>
                     <option value="whole_file">Whole File</option>
-                    <option value="all_opened_files">All Opened Files</option>
+                    <!--<option value="all_opened_files">All Opened Files</option>-->
                 </select>
             </div>
             <div class="stop-container flex items-center">
@@ -122,10 +122,11 @@
             </div>
         </div>
         <div class="prompt-container relative">
-            <textarea class="h-24 w-full text-white bg-stone-700 p-2 text-sm resize-vertical"
-                placeholder="Ask something...&#10;Press Ctrl-Enter to send and clear the input box.&#10;Press Alt-Enter to send and keep the prompt." id="prompt-input"></textarea>
+            <hr class="text-gray-100"/>
+            <textarea class="h-32 w-full text-gray-300 bg-neutral-800 p-2 text-sm resize-vertical"
+                placeholder="Ask something...&#10;&#10;Press Ctrl-Enter to send.&#10;Press Ctrl-Alt-Enter to send and keep the prompt." id="prompt-input"></textarea>
             <div class="flex-container flex items-center py-0">
-                <div id="conversation-id" class="w-full text-gray-500 p-0 text-xs text-right" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ">Conversation ID: /</div>
+                <div id="conversation-id" class="w-full text-gray-500 p-0 text-xs text-right" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ">Conversation: /</div>
                 <button id="reset-button" class="flex mx-2 p-0 text-white font-semibold text-sm"
                     title="Reset conversation">
                     <span class="reset-icon"></span>

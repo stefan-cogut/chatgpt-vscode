@@ -4,6 +4,7 @@ import * as marked from 'marked';
 import hljs from 'highlight.js';
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/autocomplete';
+import { log } from 'console';
 
 declare const acquireVsCodeApi: () => any;
 
@@ -53,6 +54,7 @@ interface ChatEvent {
         break;
       case "setTask":
         $('#prompt-input').val(value);
+        $('#prompt-input').focus();
         break;
       case "setWorkingState":
         setWorkingState(value);
@@ -70,7 +72,7 @@ interface ChatEvent {
   });
 
   function updateConversationId(id: string): void {
-    $('#conversation-id').text(`Conversation ID: ${id || '/'}`);
+    $('#conversation-id').text(`Conversation: ${id || '/'}`);
   }
 
   function fixCodeBlocks(response: string) {
@@ -248,7 +250,7 @@ interface ChatEvent {
   function setWorkingState(state: string): void {
     workingState = state;
     toggleStopButton(workingState === 'asking');
-    $('#working-state').text(workingState === 'asking' ? 'Thinking...' : '');
+    $('#working-state').text(workingState === 'asking' ? 'thinking...' : '');
   }
 
   function toggleStopButton(enabled: boolean): void {
@@ -265,12 +267,13 @@ interface ChatEvent {
   }
 
   // Function to send a message to the extension
-  function sendMessage(value: string) {
+  function sendMessage(value: string, shouldKeepThePrompt:boolean) {
     vscode.postMessage({
       type: 'sendPrompt',
       value: {
         task: value,
-        context: $('#context-select').val()
+        context: $('#context-select').val(),
+        shouldKeepThePrompt: shouldKeepThePrompt
       }
     });
   }
@@ -282,17 +285,17 @@ interface ChatEvent {
     const promptInput = $('#prompt-input');
     promptInput.on('keyup', (e: JQuery.KeyUpEvent) => {
       // If the key combination that was pressed was Ctrl+Enter
-      if (e.keyCode === 13 && e.ctrlKey) {
-        sendMessage(promptInput.val() as string);
-        promptInput.val(() => { return "";});
+      if (e.keyCode === 13 && e.ctrlKey && !e.altKey) {
+        sendMessage(promptInput.val() as string, false);
       }
-      if (e.keyCode === 13 && e.altKey) {
-        sendMessage(promptInput.val() as string);
+      // If the key combination that was pressed was Alt+Enter
+      if (e.keyCode === 13 && e.ctrlKey && e.altKey) {
+        sendMessage(promptInput.val() as string, true);
       }
     });
 
     $('#send-request').on('click', () => {
-      sendMessage(promptInput.val() as string);
+      sendMessage(promptInput.val() as string, false);
     });
 
     // Listen for click events on the stop button
@@ -309,7 +312,7 @@ interface ChatEvent {
       });
     });
 
-    $('#prompt-input').autocomplete({
+    /* $('#prompt-input').autocomplete({
       position: { my: "left bottom", at: "left top" },
       source: function (request: any, response: Function) {
         // if cachedPrompts is empty, postMessage 'loadPrompts'
@@ -324,7 +327,7 @@ interface ChatEvent {
         });
         response(matches);
       }
-    });
+    }); */
 
     vscode.postMessage({ type: 'webviewLoaded' });
   });

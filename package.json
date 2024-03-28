@@ -1,13 +1,13 @@
 {
-  "name": "chatgpt-ai",
+  "name": "fintechos-ai",
   "displayName": "FintechOS AI",
-  "description": "Automatically write new code, ask questions, find bugs, and more with ChatGPT AI",
-  "version": "0.7.13",
-  "publisher": "YaleHuang",
-  "icon": "resources/extensionIcon.png",
+  "description": "Automatically write new code, ask questions, find bugs, and more with FintechOS AI",
+  "version": "0.1.0",
+  "publisher": "Fintech OS",
+  "icon": "resources/icon.png",
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/yaleh/chatgpt-vscode"
+    "url": "https://github.com/stefan-cogut/chatgpt-vscode"
   },
   "engines": {
     "vscode": "^1.76.0"
@@ -15,27 +15,10 @@
   "categories": [
     "Other"
   ],
-  "keywords": [
-    "chatgpt",
-    "openai",
-    "gpt3",
-    "copilot",
-    "ai",
-    "explain",
-    "find bugs",
-    "explain ",
-    "refactor"
-  ],
+  "keywords": [],
   "activationEvents": [
     "onView:chatgpt-ai.chatView",
     "onCommand:chatgpt-ai.ask",
-    "onCommand:chatgpt-ai.explain",
-    "onCommand:chatgpt-ai.refactor",
-    "onCommand:chatgpt-ai.optimize",
-    "onCommand:chatgpt-ai.findProblems",
-    "onCommand:chatgpt-ai.documentation",
-    "onCommand:chatgpt-ai.complete",
-    "onCommand:chatgpt-ai.resetConversation",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
@@ -46,32 +29,8 @@
         "title": "Ask FintechOS AI"
       },
       {
-        "command": "chatgpt-ai.explain",
-        "title": "FintechOS-AI: Explain selection"
-      },
-      {
-        "command": "chatgpt-ai.refactor",
-        "title": "FintechOS-AI: Refactor selection"
-      },
-      {
-        "command": "chatgpt-ai.findProblems",
-        "title": "FintechOS-AI: Find problems"
-      },
-      {
-        "command": "chatgpt-ai.optimize",
-        "title": "FintechOS-AI: Optimize selection"
-      },
-      {
-        "command": "chatgpt-ai.documentation",
-        "title": "FintechOS-AI: Write documentation"
-      },
-      {
-        "command": "chatgpt-ai.complete",
-        "title": "FintechOS-AI: Complete code"
-      },
-      {
         "command": "chatgpt-ai.resetConversation",
-        "title": "Reset FintechOS AI conversation"
+        "title": "Reset conversation"
       }
     ],
     "menus": {
@@ -79,66 +38,12 @@
         {
           "command": "chatgpt-ai.ask",
           "when": "editorTextFocus",
-          "group": "chatgpt-menu-group@1"
-        },
-        {
-          "command": "chatgpt-ai.explain",
-          "when": "editorHasSelection",
-          "group": "chatgpt-menu-group@2"
-        },
-        {
-          "command": "chatgpt-ai.refactor",
-          "when": "editorHasSelection",
-          "group": "chatgpt-menu-group@3"
-        },
-        {
-          "command": "chatgpt-ai.findProblems",
-          "when": "editorHasSelection",
-          "group": "chatgpt-menu-group@4"
-        },
-        {
-          "command": "chatgpt-ai.optimize",
-          "when": "editorHasSelection",
-          "group": "chatgpt-menu-group@5"
-        },
-        {
-          "command": "chatgpt-ai.documentation",
-          "when": "editorHasSelection",
-          "group": "chatgpt-menu-group@6"
-        },
-        {
-          "command": "chatgpt-ai.complete",
-          "when": "editorHasSelection",
-          "group": "chatgpt-menu-group@7"
+          "group": "fintechos-menu-group@1"
         }
       ],
       "commandPalette": [
         {
           "command": "chatgpt-ai.ask"
-        },
-        {
-          "command": "chatgpt-ai.explain",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "chatgpt-ai.refactor",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "chatgpt-ai.findProblems",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "chatgpt-ai.optimize",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "chatgpt-ai.documentation",
-          "when": "editorHasSelection"
-        },
-        {
-          "command": "chatgpt-ai.complete",
-          "when": "editorHasSelection"
         },
         {
           "command": "chatgpt-ai.resetConversation"
@@ -164,7 +69,7 @@
       ]
     },
     "configuration": {
-      "title": "ChatGPT AI",
+      "title": "FintechOS AI",
       "type": "object",
       "properties": {
         "chatgpt-ai.apiKey": {
@@ -189,42 +94,6 @@
           "order": 18,
           "markdownDescription": "Indent the code snippet on inserting it to the source code.",
           "default": true
-        },
-        "chatgpt-ai.promptPrefix.explain": {
-          "type": "string",
-          "default": "Explain what this code does: ",
-          "description": "The prompt prefix used for explaining the selected code",
-          "order": 1000
-        },
-        "chatgpt-ai.promptPrefix.refactor": {
-          "type": "string",
-          "default": "Refactor this code and explain what's changed: ",
-          "description": "The prompt prefix used for refactoring the selected code",
-          "order": 1010
-        },
-        "chatgpt-ai.promptPrefix.findProblems": {
-          "type": "string",
-          "default": "Find problems with the following code, fix them and explain what was wrong (Do not change anything else, if there are no problems say so): ",
-          "description": "The prompt prefix used for finding problems in the selected code",
-          "order": 1020
-        },
-        "chatgpt-ai.promptPrefix.documentation": {
-          "type": "string",
-          "default": "Write documentation for the following code: ",
-          "description": "The prompt prefix used for writing documentation for the selected code",
-          "order": 1030
-        },
-        "chatgpt-ai.promptPrefix.complete": {
-          "type": "string",
-          "default": "Don't explain the following code.\n\nDon't explain the generated code.\n\nShow the updated code only, no description.\n\nGenerate code according to the last comment:\n\n* Append the code after the comment\n* Keep the comment text",
-          "description": "Complete the code according to the last comment.",
-          "order": 1040
-        },
-        "chatgpt-ai.promptPrefix.optimize": {
-          "type": "string",
-          "default": "Optimize the following code if there is anything to improve, if not say so: ",
-          "description": "The prompt prefix used for optimizing the selected code",
-          "order": 1050
         },
         "chatgpt-ai.keepConversation": {
           "type": "boolean",
