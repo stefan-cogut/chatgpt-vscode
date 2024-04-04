@@ -2,7 +2,7 @@
   "name": "fintechos-ai",
   "displayName": "FintechOS AI",
   "description": "Automatically write new code, ask questions, find bugs, and more with FintechOS AI",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "Fintech OS",
   "icon": "resources/icon.png",
   "license": "MIT",
