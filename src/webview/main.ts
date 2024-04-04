@@ -4,7 +4,6 @@ import * as marked from 'marked';
 import hljs from 'highlight.js';
 import $ from 'jquery';
 import 'jquery-ui/ui/widgets/autocomplete';
-import { log } from 'console';
 
 declare const acquireVsCodeApi: () => any;
 
@@ -62,6 +61,9 @@ interface ChatEvent {
       case "setConversationId":
         updateConversationId(value);
         break;
+      case "getConversationId":
+        getConversationId();
+        break;
       case "promptsLoaded":
         cachedPrompts = value;
         break;
@@ -73,6 +75,10 @@ interface ChatEvent {
 
   function updateConversationId(id: string): void {
     $('#conversation-id').text(`Conversation: ${id || '/'}`);
+  }
+
+  function getConversationId(): string {
+    return $('#conversation-id').text();
   }
 
   function fixCodeBlocks(response: string) {

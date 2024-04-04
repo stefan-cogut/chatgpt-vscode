@@ -73,21 +73,15 @@
       "type": "object",
       "properties": {
         "chatgpt-ai.apiKey": {
-          "markdownDescription": "OpenAI API key from [https://platform.openai.com/account/api-keys](https://platform.openai.com/account/api-keys)",
+          "markdownDescription": "The FintechOS Subscription Key.",
           "type": "string",
           "order": 10
         },
         "chatgpt-ai.apiBaseUrl": {
           "type": "string",
           "default": "https://api.openai.com/v1",
-          "description": "The base URL for the OpenAI API",
+          "description": "The URL for the FintechOS AI Service API",
           "order": 11
-        },
-        "chatgpt-ai.model": {
-          "type": "string",
-          "default": "gpt-3.5-turbo",
-          "markdownDescription": "The GPT [models](https://platform.openai.com/docs/models) to use for chat interactions, such as gpt-3.5-turbo or gpt-4, etc.",
-          "order": 12
         },
         "chatgpt-ai.indentOnInserting": {
           "type": "boolean",

@@ -133,6 +133,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 
 	private _chatGPTAPI?: ChatGPTAPI | ChatGPTUnofficialProxyAPI;
 	private _conversation?: any;
+	private _conversationId?: string = undefined;
 
 	// An AbortController for _chatGPTAPI
 	private _abortController = new AbortController();
@@ -350,6 +351,7 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 			if (this._conversation) {
 				this._conversation = null;
 			}
+			this._conversationId = undefined;
 			this._currentMessageNumber = 0;
 			this._task = '';
 			this._response = '';
@@ -421,14 +423,14 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 	private async _askChatGPT(searchPrompt: string, shouldKeepThePrompt: boolean = true): Promise<void> {
 		this._view?.show?.(true);
 
-		if (!this._chatGPTAPI) {
-			const errorMessage = "[ERROR] API key not set or wrong, please go to extension settings to set it (read README.md for more info).";
-			this._view?.webview.postMessage({ type: "addEvent", value: { text: errorMessage } });
-			return;
-		}
+		// if (!this._chatGPTAPI) {
+		// 	const errorMessage = "[ERROR] API key not set or wrong, please go to extension settings to set it (read README.md for more info).";
+		// 	this._view?.webview.postMessage({ type: "addEvent", value: { text: errorMessage } });
+		// 	return;
+		// }
 
 		// Manages the prompt input
-		if(shouldKeepThePrompt){
+		if (shouldKeepThePrompt) {
 			this._view?.webview.postMessage({ type: "setTask", value: this._task });
 		} else {
 			this._view?.webview.postMessage({ type: "setTask", value: '' });
@@ -448,28 +450,85 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		try {
 			const currentMessageNumber = this._currentMessageNumber;
 
-			const res = await this._chatGPTAPI.sendMessage(searchPrompt, {
-				onProgress: (partialResponse) => {
-					if (partialResponse.id === partialResponse.parentMessageId || this._currentMessageNumber !== currentMessageNumber) {
-						return;
-					}
+			// const res = await this._chatGPTAPI.sendMessage(searchPrompt, {
+			// 	onProgress: (partialResponse) => {
+			// 		if (partialResponse.id === partialResponse.parentMessageId || this._currentMessageNumber !== currentMessageNumber) {
+			// 			return;
+			// 		}
 
+			// 		if (this._view?.visible) {
+			// 			const responseMessage = { type: "addResponse", value: partialResponse };
+			// 			this._view?.webview.postMessage(responseMessage);
+			// 		}
+			// 	},
+			// 	timeoutMs: (this._settings.timeoutLength || 60) * 1000,
+			// 	abortSignal: this._abortController.signal,
+			// 	...this._conversation,
+			// });
+
+			const subscriptionKey = this._openaiAPIInfo?.apiKey || '';
+			const url = this._openaiAPIInfo?.apiBaseUrl || '';
+			const timeout = this._settings.timeoutLength || 0;
+			const inputData = {
+				'user_input': searchPrompt,
+				'thread_id': (this._conversationId === undefined) ? null : this._conversationId
+			};
+
+			const options = {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json;charset=utf-8',
+					'Ocp-Apim-Subscription-Key': subscriptionKey
+				},
+				body: JSON.stringify(inputData),
+				signal: this._abortController.signal
+			};
+
+			// Timeout setup
+			const timeoutId = setTimeout(() => {
+				this.abort(`Timeout reached: ${timeout} seconds.`); // Abort the fetch request
+			}, (timeout * 1000));
+
+			const res = await fetch(url, options)
+				.then(response => {
+					// Check if the request was successful
+					if (!response.ok) {
+						throw new Error('Network response was not ok');
+					}
+					// Parse the response as JSON
+					return response.json();
+				})
+				.then((data: any) => {
+					// Handle the JSON data
+					//console.log(data);
 					if (this._view?.visible) {
-						const responseMessage = { type: "addResponse", value: partialResponse };
+						this._conversationId = data.thread_id;
+						const responseValue = {
+							id : this._currentMessageNumber,
+  							text: data.response,
+  							parentMessageId: this._conversation?.parentMessageId,
+  							conversationId: this._conversationId
+						};
+						const responseMessage = { type: "addResponse", value: responseValue };
 						this._view?.webview.postMessage(responseMessage);
 					}
-				},
-				timeoutMs: (this._settings.timeoutLength || 60) * 1000,
-				abortSignal: this._abortController.signal,
-				...this._conversation,
-			});
+				})
+				.catch(error => {
+					// Handle any errors that occurred during the fetch
+					console.error('Fetch error:', error);
+					const errorMessage = `[FETCH ERROR] ${error}`;
+					this._view?.show?.(true);
+					this._view?.webview.postMessage({ type: "addEvent", value: { text: errorMessage } });
+				});
+
+			clearTimeout(timeoutId);
 
 			if (this._settings.keepConversation) {
 				this._conversation = {
-					conversationId: res.conversationId,
-					parentMessageId: res.id,
+					conversationId: this._conversationId,
+					parentMessageId: this._conversation?.parentMessageId,
 				};
-				this._view?.webview?.postMessage({ type: "setConversationId", value: res.conversationId });
+				this._view?.webview?.postMessage({ type: "setConversationId", value: this._conversationId });
 			}
 		} catch (e) {
 			console.error(e);
@@ -481,11 +540,11 @@ class ChatGPTViewProvider implements vscode.WebviewViewProvider {
 		this._setWorkingState("idle");
 	}
 
-	public abort(){
+	public abort(reason:string = 'Aborted by user.'){
 		this._abortController?.abort();
 		this._setWorkingState("idle");
 
-		this._view?.webview.postMessage({type: 'addEvent', value: {text: '[EVENT] Aborted by user.'}});			
+		this._view?.webview.postMessage({type: 'addEvent', value: {text: `[EVENT] ${reason}`}});			
 
 		// reset the controller
 		this._abortController = new AbortController();
